@@ -1,13 +1,20 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using PersonalCV.Data.Interfaces;
 using PersonalCV.Data.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using PersonalCV.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options => options.Conventions.AuthorizeFolder("/Admin"));
 
 builder.Services.AddTransient<IContactMessage>(x => new ContactMessageRepository(builder.Configuration.GetConnectionString("sqlserver")));
+
+builder.Services.AddDbContext<PersonalCVContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("sqlserver")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<PersonalCVContext>();
 builder.Services.AddOutputCache(options =>
 {
     options.AddBasePolicy(builder =>
