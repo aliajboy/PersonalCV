@@ -6,8 +6,7 @@ using PersonalCV.Domain.Models;
 namespace PersonalCV.Data.Repositories;
 public class ContactMessageRepository : IContactMessage
 {
-    private string sql = "";
-    private string? connString;
+    private readonly string? connString;
 
     public ContactMessageRepository(string connectionString)
     {
@@ -16,7 +15,7 @@ public class ContactMessageRepository : IContactMessage
 
     public async Task<int> Add(ContactMessage contactMessage)
     {
-        sql = "INSERT INTO ContactMessage ([Name],[Email],[Phone],[Subject],[Message]) OUTPUT INSERTED.ID VALUES (@Name,@Email,@Phone,@Subject,@Message)";
+        string sql = "INSERT INTO ContactMessage ([Name],[Email],[Phone],[Subject],[Message]) OUTPUT INSERTED.ID VALUES (@Name,@Email,@Phone,@Subject,@Message)";
         int id;
 
         using (SqlConnection connection = new SqlConnection(connString))
@@ -35,7 +34,7 @@ public class ContactMessageRepository : IContactMessage
 
     public async Task Delete(int id)
     {
-        sql = "DELETE FROM ContactMessage WHERE id = @Id";
+        string sql = "DELETE FROM ContactMessage WHERE id = @Id";
 
         using (SqlConnection connection = new SqlConnection(connString))
         {
@@ -45,7 +44,7 @@ public class ContactMessageRepository : IContactMessage
 
     public async Task Edit(ContactMessage contactMessage)
     {
-        sql = "UPDATE ContactMessage SET [Name] = @Name,[Email] = @Email,[Phone] = @Phone,[Subject] = @Subject,[Message] = @Message WHERE Id = @Id";
+        string sql = "UPDATE ContactMessage SET [Name] = @Name,[Email] = @Email,[Phone] = @Phone,[Subject] = @Subject,[Message] = @Message WHERE Id = @Id";
 
         using (SqlConnection connection = new SqlConnection(connString))
         {
@@ -55,7 +54,7 @@ public class ContactMessageRepository : IContactMessage
 
     public async Task<List<ContactMessage>> GetAll()
     {
-        sql = "select * from ContactMessage";
+        string sql = "select * from ContactMessage";
 
         IEnumerable<ContactMessage> contactMessages;
 
@@ -69,7 +68,7 @@ public class ContactMessageRepository : IContactMessage
 
     public async Task<ContactMessage> GetByName(string name)
     {
-        sql = "SELECT * FROM ContactMessage where Name Like '%@Name%'";
+        string sql = "SELECT * FROM ContactMessage where Name Like '%@Name%'";
         ContactMessage contactMessage;
 
         using (SqlConnection connection = new SqlConnection(connString))

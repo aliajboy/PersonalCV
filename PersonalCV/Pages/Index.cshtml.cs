@@ -9,7 +9,7 @@ public class IndexModel : PageModel
     public ContactMessage Message { get; set; } = null!;
     public string PageMessage { get; set; } = "";
 
-    private IContactMessage _contactMessage;
+    private readonly IContactMessage _contactMessage;
 
     public IndexModel(IContactMessage contactMessage)
     {
