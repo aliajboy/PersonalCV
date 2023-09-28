@@ -7,9 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddTransient<IContactMessage>(x=> new ContactMessageRepository(builder.Configuration.GetConnectionString("sqlserver")));
-builder.Services.AddResponseCompression(options => { 
-    options.EnableForHttps = true; 
+builder.Services.AddTransient<IContactMessage>(x => new ContactMessageRepository(builder.Configuration.GetConnectionString("sqlserver")));
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder =>
+    builder.Cache());
+    options.SizeLimit = 200;
+    options.DefaultExpirationTimeSpan = TimeSpan.FromHours(12);
+});
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
 });
@@ -27,9 +35,19 @@ if (!app.Environment.IsDevelopment())
 
 }
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+var cacheMaxAgeOneWeek = (60 * 60 * 24 * 7).ToString();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append(
+             "Cache-Control", $"public, max-age={cacheMaxAgeOneWeek}");
+    }
+});
 
 app.UseRouting();
+app.UseOutputCache();
 
 app.UseAuthorization();
 

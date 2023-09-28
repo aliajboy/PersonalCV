@@ -16,17 +16,25 @@ public class ContactMessageRepository : IContactMessage
     public async Task<int> Add(ContactMessage contactMessage)
     {
         string sql = "INSERT INTO ContactMessage ([Name],[Email],[Phone],[Subject],[Message]) OUTPUT INSERTED.ID VALUES (@Name,@Email,@Phone,@Subject,@Message)";
-        int id;
+        int id = 0;
 
-        using (SqlConnection connection = new SqlConnection(connString))
+        try
         {
-            id = await connection.QuerySingleAsync<int>(sql, new {
-                Name = contactMessage.Name,
-                Email = contactMessage.Email,
-                Phone = contactMessage.Phone,
-                Subject = contactMessage.Subject,
-                Message= contactMessage.Message
-            });
+            using (SqlConnection connection = new SqlConnection(connString))
+            {
+                id = await connection.QuerySingleAsync<int>(sql, new
+                {
+                    Name = contactMessage.Name,
+                    Email = contactMessage.Email,
+                    Phone = contactMessage.Phone,
+                    Subject = contactMessage.Subject,
+                    Message = contactMessage.Message
+                });
+            }
+        }
+        catch
+        {
+            return id;
         }
 
         return id;
@@ -54,28 +62,43 @@ public class ContactMessageRepository : IContactMessage
 
     public async Task<List<ContactMessage>> GetAll()
     {
-        string sql = "select * from ContactMessage";
-
-        IEnumerable<ContactMessage> contactMessages;
-
-        using (SqlConnection connection = new SqlConnection(connString))
+        try
         {
-            contactMessages = await connection.QueryAsync<ContactMessage>(sql);
-        }
+            string sql = "select * from ContactMessage";
 
-        return contactMessages.ToList();
+            IEnumerable<ContactMessage> contactMessages;
+
+            using (SqlConnection connection = new SqlConnection(connString))
+            {
+                contactMessages = await connection.QueryAsync<ContactMessage>(sql);
+            }
+
+            return contactMessages.ToList();
+
+        }
+        catch
+        {
+            return new List<ContactMessage>() { new ContactMessage() { Name = "ارتباط با بانک اطلاعاتی برقرار نشد", Email = "", Subject = "", Message = "" } };
+        }
     }
 
     public async Task<ContactMessage> GetByName(string name)
     {
-        string sql = "SELECT * FROM ContactMessage where Name Like '%@Name%'";
-        ContactMessage contactMessage;
-
-        using (SqlConnection connection = new SqlConnection(connString))
+        try
         {
-            contactMessage = await connection.QueryFirstOrDefaultAsync<ContactMessage>(sql, new { Name = name });
-        }
+            string sql = "SELECT * FROM ContactMessage where Name Like '%@Name%'";
+            ContactMessage contactMessage;
 
-        return contactMessage;
+            using (SqlConnection connection = new SqlConnection(connString))
+            {
+                contactMessage = await connection.QueryFirstOrDefaultAsync<ContactMessage>(sql, new { Name = name });
+            }
+
+            return contactMessage;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

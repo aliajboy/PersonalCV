@@ -5,7 +5,7 @@ public class ContactMessage
 {
     [Key]
     public int Id { get; set; }
-    [MaxLength(100)]
+    [MaxLength(150)]
     public required string Name { get; set; }
     [EmailAddress]
     [MaxLength(150)]
