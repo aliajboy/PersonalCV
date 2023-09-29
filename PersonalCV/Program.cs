@@ -60,4 +60,11 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<PersonalCVContext>();
+    context.Database.EnsureCreated();
+}
+
 app.Run();
