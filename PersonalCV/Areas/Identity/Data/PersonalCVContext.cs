@@ -12,7 +12,7 @@ public class PersonalCVContext : IdentityDbContext<IdentityUser>
     {
     }
 
-    public DbSet<ContactMessage> ContactMessages { get; set; }
+    public DbSet<ContactMessage> ContactMessage { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -22,7 +22,8 @@ public class PersonalCVContext : IdentityDbContext<IdentityUser>
             Email = "jebaleali@gmail.com",
             EmailConfirmed = true,
             UserName = "jebaleali@gmail.com",
-            NormalizedUserName = "JEBALEALI@GMAIL.COM"
+            NormalizedUserName = "JEBALEALI@GMAIL.COM",
+            NormalizedEmail = "JEBALEALI@GMAIL.COM"
         };
 
         //set user password
