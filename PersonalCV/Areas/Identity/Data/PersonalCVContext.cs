@@ -5,13 +5,8 @@ using PersonalCV.Domain.Models;
 
 namespace PersonalCV.Data;
 
-public class PersonalCVContext : IdentityDbContext<IdentityUser>
+public class PersonalCVContext(DbContextOptions<PersonalCVContext> options) : IdentityDbContext<IdentityUser>(options)
 {
-    public PersonalCVContext(DbContextOptions<PersonalCVContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<ContactMessage> ContactMessage { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
