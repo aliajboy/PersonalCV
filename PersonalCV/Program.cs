@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using PersonalCV.Data.Interfaces;
 using PersonalCV.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -15,26 +14,13 @@ builder.Services.AddTransient<IContactMessage>(x => new ContactMessageRepository
 builder.Services.AddDbContext<PersonalCVContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("sqlserver")));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<PersonalCVContext>();
-builder.Services.AddOutputCache(options =>
-{
-    options.AddBasePolicy(builder =>
-    builder.Cache());
-    options.SizeLimit = 200;
-    options.DefaultExpirationTimeSpan = TimeSpan.FromHours(12);
-});
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-    options.Providers.Add<BrotliCompressionProvider>();
-    options.Providers.Add<GzipCompressionProvider>();
-});
+builder.Services.AddResponseCompression();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseResponseCompression();
 
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -52,9 +38,9 @@ app.UseStaticFiles(new StaticFileOptions
              "Cache-Control", $"public, max-age={cacheMaxAgeOneWeek}");
     }
 });
+app.UseResponseCompression();
 
 app.UseRouting();
-app.UseOutputCache();
 
 app.UseAuthorization();
 
