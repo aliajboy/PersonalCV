@@ -29,15 +29,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 
-var cacheMaxAgeOneWeek = (60 * 60 * 24 * 7).ToString();
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        ctx.Context.Response.Headers.Append(
-             "Cache-Control", $"public, max-age={cacheMaxAgeOneWeek}");
-    }
-});
+app.UseStaticFiles();
 app.UseResponseCompression();
 
 app.UseRouting();
@@ -53,4 +45,4 @@ using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.Creat
     context?.Database.EnsureCreated();
 }
 
-app.Run();
+await app.RunAsync();
